@@ -1,9 +1,15 @@
-var express = require('express');
-var router = express.Router();
+const homeRouter = require("./modules/home");
+const userRouter = require("./modules/user");
 
- 
-router.get('/', function(req, res, next) {
-  // 这里理论是进不来的
-});
+const BASE_PATH = "/api"; // 路由前缀
+const resolve = require("path").resolve;
 
-module.exports = router;
+function setUpRouter(app) {
+  console.log(resolve(BASE_PATH, "user"))
+  app.use(BASE_PATH, homeRouter);
+  app.use(resolve(BASE_PATH, "user"), userRouter);
+}
+
+module.exports = {
+  setUpRouter
+};
