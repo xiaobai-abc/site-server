@@ -1,30 +1,33 @@
 const jwt = require("jsonwebtoken");
 const md5 = require("js-md5");
-const SECRET_KEY = "XIAOBAI-ABC-SITE-JWT-KEY";
+
+const JWT_CONFIG = {
+  secret: "XIAOBAI-ABC-SITE-JWT-KEY",
+  exp: Date.now() / 1000 + 60 * 60 * 24
+};
 
 const TokenUtil = (function () {
   return {
-    sign: function (username) {
+    sign: function (username, info = {}) {
       const token = jwt.sign(
         {
           username,
           iss: "node",
           sub: "jcg",
           iat: Date.now() / 1000,
-          exp: Date.now() / 1000 + 60 * 60 * 24
-          //
+          exp: JWT_CONFIG.exp,
+          ...info
         },
-        SECRET_KEY,
+        JWT_CONFIG.secret,
         { algorithm: "HS256" }
       );
       return token;
     },
 
     verify: function (token) {
-      // const decoded = jwt.verify(token, SECRET_KEY);
       // console.log(decoded);
       try {
-        const decoded = jwt.verify(token, SECRET_KEY);
+        const decoded = jwt.verify(token, JWT_CONFIG.secret);
         return decoded;
       } catch (err) {
         return false;

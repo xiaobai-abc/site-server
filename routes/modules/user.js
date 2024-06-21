@@ -1,9 +1,13 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const md5 = require("js-md5");
+const jwt = require("../jwt/index");
+
 const user = require("../../mongo/schema/user");
 
-const UserModel = mongoose.model("User", user.UserSchema);
 const router = express.Router();
+const UserModel = mongoose.model("User", user.UserSchema);
+const { TokenUtil } = jwt;
 
 /* GET users listing. */
 router.get("/", function (req, res, next) {
@@ -13,20 +17,68 @@ router.get("/", function (req, res, next) {
 router.post(
   "/login",
   async function (req, res, next) {
-    console.log(">>>>>>>>>>>>");
+    const { username, password } = req.body;
 
-    const a = await UserModel.find({});
-    console.log("zxczxcxz", a);
+    const user = await UserModel.findOne({
+      username,
+      password: md5(password)
+    }).exec();
 
+    if (user) {
+      const token = TokenUtil.sign(user.username);
+      req.data = token;
+    }
     next();
   },
   function (req, res) {
-    res.status(200).send({
-      code: 200,
-      data: {},
-      message: "登录成功"
-    });
+    if (req.data) {
+      res.status(200).send({
+        code: 200,
+        data: {
+          token: req.data
+        },
+        message: "登录成功"
+      });
+    } else {
+      res.status(403).send({
+        code: 403,
+        data: {},
+        message: "账户密码错误"
+      });
+    }
   }
 );
+
+router.get("/verify", async function (req, res) {
+  const token = req.headers.authorization;
+  if (!token) {
+    res.status(401).send({
+      code: 0,
+      data: null,
+      message: "未登录~~~"
+    });
+    return;
+  }
+  const decoded = TokenUtil.verify(token.split("Bearer ")[1]);
+
+  if (decoded) {
+    const user = await UserModel.findOne({
+      username: decoded.username
+    }).exec();
+    res.status(200).send({
+      code: 200,
+      data: {
+        userInfo: user
+      },
+      message: "获取信息~~~"
+    });
+  } else {
+    res.status(401).send({
+      code: 0,
+      data: null,
+      message: "登录过期~~~"
+    });
+  }
+});
 
 module.exports = router;

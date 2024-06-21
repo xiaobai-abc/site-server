@@ -5,12 +5,11 @@ const UserSchema = new mongoose.Schema({
     type: String,
     unique: true //字段是否唯一
   },
-  password: {
-    type: String
-  },
-  nickname: {
-    type: String
-  }
+  password: String,
+  nickname: String,
+  avatar: String,
+  rule: Number,
+  description: String
 });
 
 module.exports = {

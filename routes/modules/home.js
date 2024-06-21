@@ -3,17 +3,29 @@ var router = express.Router();
 
 router.get("/", function (req, res) {
   // 这里理论是进不来的 当我啥都没说
-  res.send("this is home")
+  res.send("this is home");
 });
 
 // 测试接口
-router.get("/test", function (req, res) {
-  res.status(200).send({
-    code: 200,
-    data: "测试数据",
-    messgae: "测试数据"
-  });
-});
+router.get(
+  "/test",
+  function (req, res, next) {
+    res.status(200).send({
+      code: 200,
+      data: "asd",
+      messgae: "测试asd数据"
+    });
+    return
+    next();
+  },
+  function (req, res) {
+    res.status(200).send({
+      code: 200,
+      data: "测试数据",
+      messgae: "测试数据"
+    });
+  }
+);
 
 // .setHeader("Content-Type", "application/json")
 router.get("/status", function (req, res) {

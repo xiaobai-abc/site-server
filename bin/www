@@ -43,9 +43,9 @@ server.listen(port, "0.0.0.0", () => {
   console.log(`server runing http://127.0.0.1:${port}`);
   console.log(`server runing  http://${ipaddress}:${port}`);
 
-  mongodb.mongodbStart().then(()=>{
-     console.log("mongodb connect success");
-  })
+  mongodb.mongodbStart().then(() => {
+    console.log("mongodb connect success");
+  });
 });
 server.on("error", onError);
 server.on("listening", onListening);

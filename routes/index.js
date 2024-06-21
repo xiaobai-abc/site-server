@@ -5,7 +5,6 @@ const BASE_PATH = "/api"; // 路由前缀
 const resolve = require("path").resolve;
 
 function setUpRouter(app) {
-  console.log(resolve(BASE_PATH, "user"))
   app.use(BASE_PATH, homeRouter);
   app.use(resolve(BASE_PATH, "user"), userRouter);
 }
