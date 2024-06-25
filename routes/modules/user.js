@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const md5 = require("js-md5");
 const jwt = require("../jwt/index");
+const request = require("request");
 
 const user = require("../../mongo/schema/user");
 
@@ -62,9 +63,15 @@ router.get("/verify", async function (req, res) {
   const decoded = TokenUtil.verify(token.split("Bearer ")[1]);
 
   if (decoded) {
-    const user = await UserModel.findOne({
-      username: decoded.username
-    }).exec();
+    const user = await UserModel.findOne(
+      {
+        username: decoded.username
+      },
+      {
+        password: false,
+        _id: false
+      }
+    ).exec();
     res.status(200).send({
       code: 200,
       data: {
@@ -80,5 +87,48 @@ router.get("/verify", async function (req, res) {
     });
   }
 });
+
+router.post(
+  "/login/test",
+  function (req, response, next) {
+    const { url, method = "GET",...props } = req.body;
+    const base = "https://api.meseequick.com";
+    console.log(base + url, ">>>>>>>>>>");
+    request(
+      {
+        url: base + url,
+        body: {
+          ...props
+        },
+        json: true,
+        method: method,
+        headers: {
+          Authorization:
+            "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21lc2VlYWdyby5jb20iLCJpYXQiOjE3MTkyMDk0NzAsImV4cCI6MTcxOTIxMzA3MCwidWlkIjoiMjI3MDA2MDI0NTQzODAyNDMifQ.nejSN1lwbveY2cYc3y7NlaldKu9wDQambxb-Al6RoNo"
+        }
+      },
+      (err, res, body) => {
+        if (err) {
+          response.status(403).send({
+            code: 0,
+            data: null,
+            message: "接口响应失败~~~"
+          });
+          next();
+          return;
+        }
+        response.status(200).send(res.body);
+        // next();
+      }
+    );
+  },
+  function (req, res) {
+    res.status(200).send({
+      code: 200,
+      data: null,
+      message: "zxczx"
+    });
+  }
+);
 
 module.exports = router;
