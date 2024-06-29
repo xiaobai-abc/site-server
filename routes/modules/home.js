@@ -3,7 +3,9 @@ const mongoose = require("mongoose");
 const router = express.Router();
 
 const setting = require("../../mongo/schema/setting");
+const writing = require("../../mongo/schema/copywriting");
 const SettingModel = mongoose.model("Setting", setting.SettingSchema);
+const writingModel = mongoose.model("Copywriting", writing.writeSchema);
 
 router.get("/", function (req, res) {
   // 这里理论是进不来的 当我啥都没说
@@ -21,6 +23,16 @@ router.get("/home", async function (req, res) {
   });
 });
 
+router.get("/write", async function (req, res) {
+  const data = await writingModel.find(void 0, { _id: false }).exec();
+
+  res.status(200).send({
+    code: 200,
+    data: data,
+    messgae: "zxczxc"
+  });
+});
+
 // 测试接口
 router.get(
   "/test",
@@ -31,7 +43,6 @@ router.get(
       messgae: "测试asd数据"
     });
     return;
-    next();
   },
   function (req, res) {
     res.status(200).send({

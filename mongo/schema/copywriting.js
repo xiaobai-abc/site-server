@@ -1,14 +1,15 @@
 const mongoose = require("mongoose");
 
-const SettingSchema = new mongoose.Schema({
+const writeSchema = new mongoose.Schema({
   title: {
     type: String,
     unique: true //字段是否唯一
   },
-  link: Array,
-  image: Array
+  title: String,
+  describe: String,
+  video: String
 });
 
 module.exports = {
-  SettingSchema
+  writeSchema
 };
