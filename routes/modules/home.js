@@ -19,7 +19,7 @@ router.get("/home", async function (req, res) {
   res.status(200).send({
     code: 200,
     data: settingData,
-    messgae: "zxczxc"
+    messgae: "success"
   });
 });
 
@@ -29,7 +29,7 @@ router.get("/write", async function (req, res) {
   res.status(200).send({
     code: 200,
     data: data,
-    messgae: "zxczxc"
+    messgae: "success"
   });
 });
 
