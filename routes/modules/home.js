@@ -1,9 +1,11 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const router = express.Router();
+const marked = require("marked");
 
 const setting = require("../../mongo/schema/setting");
 const writing = require("../../mongo/schema/copywriting");
+const { default: axios } = require("axios");
 const SettingModel = mongoose.model("Setting", setting.SettingSchema);
 const writingModel = mongoose.model("Copywriting", writing.writeSchema);
 
@@ -18,13 +20,35 @@ router.get("/", function (req, res) {
 
 router.get("/home", async function (req, res) {
   const settingData = await SettingModel.findOne(void 0, { _id: false }).exec();
-  console.clear();
 
   res.status(200).send({
     code: 200,
     data: settingData,
     messgae: "success"
   });
+});
+
+router.get("/home/md", async function (req, res) {
+  try {
+    axios
+      .get(
+        "https://raw.githubusercontent.com/xiaobai-abc/notes/main/%E5%89%8D%E7%AB%AF%E7%AC%94%E8%AE%B0.md"
+      )
+      .then((mdFileStr) => {
+        const html = marked.parse(mdFileStr.data);
+        res.status(200).send({
+          code: 200,
+          data: html,
+          messgae: "success"
+        });
+      });
+  } catch (error) {
+    res.status(500).send({
+      code: 500,
+      data: error,
+      messgae: "success"
+    });
+  }
 });
 
 router.get("/write", async function (req, res) {
@@ -91,47 +115,6 @@ router.get("/write/detail", async function (req, res) {
     data: data,
     messgae: "success"
   });
-});
-
-// 测试接口
-router.get(
-  "/test",
-  function (req, res, next) {
-    res.status(200).send({
-      code: 200,
-      data: "asd",
-      messgae: "测试asd数据"
-    });
-    return;
-  },
-  function (req, res) {
-    res.status(200).send({
-      code: 200,
-      data: "测试数据",
-      messgae: "测试数据"
-    });
-  }
-);
-
-// .setHeader("Content-Type", "application/json")
-router.get("/status", function (req, res) {
-  const { code } = req.query;
-  const codeList = ["200", "404", "500"];
-
-  if (codeList.includes(code)) {
-    res.status(Number(code)).send({
-      code: Number(code),
-      data: {},
-      messgae: "响应数据~~~"
-    });
-    return;
-  } else {
-    res.status(200).send({
-      code: null,
-      data: {},
-      messgae: "无对应展示码"
-    });
-  }
 });
 
 module.exports = router;

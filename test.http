@@ -9,3 +9,7 @@ get {{url}}/test
 ### 登录
 
 post {{url}}/user/login
+
+### 
+
+get {{url}}	 
