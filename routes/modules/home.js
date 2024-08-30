@@ -20,7 +20,15 @@ router.get("/", function (req, res) {
 
 router.get("/home", async function (req, res) {
   const settingData = await SettingModel.findOne(void 0, { _id: false }).exec();
-
+  const { type } = req.query;
+  if (type == "error") {
+    res.status(401).send({
+      code: 401,
+      data: "错误测试",
+      messgae: "success"
+    });
+    return;
+  }
   res.status(200).send({
     code: 200,
     data: settingData,
