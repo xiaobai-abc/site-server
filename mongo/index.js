@@ -14,6 +14,6 @@ async function mongodbStart(callback) {
   return mongoo;
 }
 
-module.exports = {
-  mongodbStart
-};
+// module.exports = {
+//   mongodbStart
+// };

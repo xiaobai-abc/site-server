@@ -57,4 +57,12 @@ router.get("/status", function (req, res) {
   }
 });
 
+router.get("/v", function (req, res) {
+  res.status(200).send({
+    code: null,
+    data: [],
+    messgae: "无对应展示码"
+  });
+});
+
 module.exports = router;

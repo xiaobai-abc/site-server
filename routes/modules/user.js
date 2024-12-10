@@ -1,13 +1,13 @@
 const express = require("express");
-const mongoose = require("mongoose");
+// const mongoose = require("mongoose");
 const md5 = require("js-md5");
 const jwt = require("../jwt/index");
 const request = require("request");
 
-const user = require("../../mongo/schema/user");
+// const user = require("../../mongo/schema/user");
 
 const router = express.Router();
-const UserModel = mongoose.model("User", user.UserSchema);
+// const UserModel = mongoose.model("User", user.UserSchema);
 const { TokenUtil } = jwt;
 
 /* GET users listing. */
@@ -20,33 +20,36 @@ router.post(
   async function (req, res, next) {
     const { username, password } = req.body;
 
-    const user = await UserModel.findOne({
-      username,
-      password: md5(password)
-    }).exec();
+    // const user = await UserModel.findOne({
+    //   username,
+    //   password: md5(password)
+    // }).exec();
 
-    if (user) {
-      const token = TokenUtil.sign(user.username);
-      req.data = token;
-    }
+    // if (user) {
+    //   const token = TokenUtil.sign(user.username);
+    //   req.data = token;
+    // }
     next();
   },
   function (req, res) {
-    if (req.data) {
-      res.status(200).send({
-        code: 200,
-        data: {
-          token: req.data
-        },
-        message: "登录成功"
-      });
-    } else {
-      res.status(403).send({
-        code: 403,
-        data: {},
-        message: "账户密码错误"
-      });
-    }
+    const { username, password } = req.body;
+    const token = TokenUtil.sign(username);
+    res.status(200).send({
+      code: 200,
+      data: {
+        token: token
+      },
+      message: "登录成功"
+    });
+    // if (req.data) {
+
+    // } else {
+    //   res.status(403).send({
+    //     code: 403,
+    //     data: {},
+    //     message: "账户密码错误"
+    //   });
+    // }
   }
 );
 
@@ -63,19 +66,19 @@ router.get("/verify", async function (req, res) {
   const decoded = TokenUtil.verify(token.split("Bearer ")[1]);
 
   if (decoded) {
-    const user = await UserModel.findOne(
-      {
-        username: decoded.username
-      },
-      {
-        password: false,
-        _id: false
-      }
-    ).exec();
+    // const user = await UserModel.findOne(
+    //   {
+    //     username: decoded.username
+    //   },
+    //   {
+    //     password: false,
+    //     _id: false
+    //   }
+    // ).exec();
     res.status(200).send({
       code: 200,
       data: {
-        userInfo: user
+        // userInfo: user
       },
       message: "获取信息~~~"
     });
@@ -91,7 +94,7 @@ router.get("/verify", async function (req, res) {
 router.post(
   "/login/test",
   function (req, response, next) {
-    const { url, method = "GET",...props } = req.body;
+    const { url, method = "GET", ...props } = req.body;
     const base = "https://api.meseequick.com";
     console.log(base + url, ">>>>>>>>>>");
     request(
