@@ -1,13 +1,14 @@
 const express = require("express");
-const mongoose = require("mongoose");
+// const mongoose = require("mongoose");
 const router = express.Router();
 const marked = require("marked");
+const { client } = require("../../postgre");
 
-const setting = require("../../mongo/schema/setting");
-const writing = require("../../mongo/schema/copywriting");
+// const setting = require("../../mongo/schema/setting");
+// const writing = require("../../mongo/schema/copywriting");
 const { default: axios } = require("axios");
-const SettingModel = mongoose.model("Setting", setting.SettingSchema);
-const writingModel = mongoose.model("Copywriting", writing.writeSchema);
+// const SettingModel = mongoose.model("Setting", setting.SettingSchema);
+// const writingModel = mongoose.model("Copywriting", writing.writeSchema);
 
 router.get("/", function (req, res) {
   // 这里理论是进不来的 当我啥都没说
@@ -16,6 +17,27 @@ router.get("/", function (req, res) {
     data: null,
     message: "this is home"
   });
+});
+
+// 获取所有图库
+router.get("/pictures", function (req, res) {
+  const query = `SELECT * FROM pictures;`;
+  client
+    .query(query)
+    .then((resp) => {
+      res.status(200).send({
+        code: 1,
+        data: resp.rows,
+        messgae: "success"
+      });
+    })
+    .catch((err) => {
+      res.status(200).send({
+        code: 0,
+        data: err,
+        messgae: "err"
+      });
+    });
 });
 
 router.get("/home", async function (req, res) {
@@ -43,18 +65,14 @@ router.get("/home", async function (req, res) {
 
 router.get("/home/md", async function (req, res) {
   try {
-    axios
-      .get(
-        "https://raw.githubusercontent.com/xiaobai-abc/notes/main/%E5%89%8D%E7%AB%AF%E7%AC%94%E8%AE%B0.md"
-      )
-      .then((mdFileStr) => {
-        const html = marked.parse(mdFileStr.data);
-        res.status(200).send({
-          code: 200,
-          data: html,
-          messgae: "success"
-        });
+    axios.get("https://xiaobai-abc.cn/static/markdown.md").then((mdFileStr) => {
+      const html = marked.parse(mdFileStr.data);
+      res.status(200).send({
+        code: 200,
+        data: html,
+        messgae: "success"
       });
+    });
   } catch (error) {
     res.status(500).send({
       code: 500,
@@ -62,6 +80,27 @@ router.get("/home/md", async function (req, res) {
       messgae: "success"
     });
   }
+});
+
+router.get("/wenan-shici", function (req, res) {
+  axios
+    // .get("https://zj.v.api.aa1.cn/api/wenan-shici/?type=json")
+    .get("https://v1.hitokoto.cn/")
+    .then((response) => {
+      console.clear();
+      res.status(200).send({
+        code: 200,
+        data: response.data,
+        messgae: "success"
+      });
+    })
+    .catch((error) => {
+      res.status(500).send({
+        code: 500,
+        data: error,
+        messgae: "success"
+      });
+    });
 });
 
 router.get("/write", async function (req, res) {
