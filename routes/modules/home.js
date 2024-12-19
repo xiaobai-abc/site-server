@@ -21,13 +21,20 @@ router.get("/", function (req, res) {
 
 // 获取所有图库
 router.get("/pictures", function (req, res) {
+  const { page = 1, pageSize = 100 } = req.query;
   const query = `SELECT * FROM pictures;`;
+  const query1 = `SELECT * 
+FROM pictures
+ORDER BY id ASC
+LIMIT ${pageSize} OFFSET (${page}-1) * ${pageSize} ;`;
   client
-    .query(query)
+    .query(query1)
     .then((resp) => {
       res.status(200).send({
         code: 1,
-        data: resp.rows,
+        data: {
+          rows: resp.rows
+        },
         messgae: "success"
       });
     })
